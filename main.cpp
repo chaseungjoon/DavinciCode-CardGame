@@ -77,7 +77,7 @@ int main(){
 }
 
 void PrintStatus(){
-    std::cout << "***플레이어 패***" << '\n';
+    std::cout << "***Player Deck***" << '\n';
     std::cout << '\n';
     for (int i = 0; i<P_n; i++){
         if (Player[i].show)std::cout << i << ' ' << Player[i].color <<  ", "<< Player[i].num << " SHOWN" << '\n';
@@ -95,7 +95,7 @@ void PrintStatus(){
 */
 
     //상대 패 공개
-    std::cout << "***상대의 패****" << '\n';
+    std::cout << "***Opponent Deck****" << '\n';
     std::cout << '\n';
     for (int i = 0; i<O_n; i++){
         if (Opponent[i].show) std::cout << i << ' ' << Opponent[i].color << ", " << Opponent[i].num << '\n';
@@ -173,7 +173,7 @@ void PrintVisual(){
         }
         temp_num = "??";
     }
-    std::cout << "\n<상대의 카드>\n";
+    std::cout << "\n<Opponent Cards>\n";
     std::cout << '\n';
     std::cout << Line_1 << '\n';
     std::cout << Line_2 << '\n';
@@ -253,7 +253,7 @@ void PrintVisual(){
         temp_num = "??";
     }
 
-    std::cout << "<나의 카드>\n";
+    std::cout << "<My Cards>\n";
     std::cout << '\n';
     std::cout << Line_0 << '\n';
     std::cout << Line_1 << '\n';
@@ -297,7 +297,7 @@ void PlayerGuess(){
     int pos, guess, choice;
     while (true){
         PrintVisual();
-        std::cout << "\n숫자를 맞춰보세요! (입력 형식 : 위치, 숫자) >> ";
+        std::cout << "\nGuess the cards! (Enter : Position, Number) >> ";
         std::cin >> pos >> guess;
 
         if (Opponent[pos].show){
@@ -312,7 +312,7 @@ void PlayerGuess(){
 
             if (O_sc==O_n) return;
 
-            std::cout << "\n계속 맞추려면 1, 그만하려면 0 입력 >> ";
+            std::cout << "\nWish to continue : 1, to stop : 0 >> ";
             std::cin >> choice;
             if (choice==0) break;
         }
@@ -406,7 +406,7 @@ void OpponentGuess(){
     }
 
     std::cout << '\n';
-    std::cout << "\n상대의 예측 : " << highestProbIndex << " 번째는 " << guess << " 이다. \n";
+    std::cout << "\nOpponent's Guess : " << highestProbIndex << " th card is " << guess << "\n";
 
     if (Player[highestProbIndex].num == guess) {
         std::cout << "\nOPPONENT CORRECT!" << std::endl;
