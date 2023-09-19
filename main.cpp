@@ -19,6 +19,7 @@ Card Deck[22];
 Card Opponent[22];
 Card Player[22];
 Card Drawed;
+Card Drawed_O;
 
 void CreateDeck();
 void PlayerGuess();
@@ -35,6 +36,7 @@ int O_sc = 0;
 int P_sc = 0;
 
 bool draw_flag = false;
+bool draw_flag_O = false;
 
 int main(){
 
@@ -132,6 +134,12 @@ void PrintVisual(){
         if (i<10) Line_7 += "    " + std::to_string(i) + "     ";
         else Line_7 += "   " + std::to_string(i) + "     ";
 
+        if (draw_flag_O && Opponent[i].color==Drawed_O.color && Opponent[i].num == Drawed_O.num) {
+            Line_0 += "  NEW";
+            draw_flag = false;
+        }
+        else Line_0 += "          ";
+
         if (!Opponent[i].show){
             if (Opponent[i].color == "white"){
                 Line_1 += line_white_1 + "  ";
@@ -175,6 +183,7 @@ void PrintVisual(){
     }
     std::cout << "\n<Opponent Cards>\n";
     std::cout << '\n';
+    std::cout << Line_0 << '\n';
     std::cout << Line_1 << '\n';
     std::cout << Line_2 << '\n';
     std::cout << Line_3 << '\n';
@@ -206,6 +215,7 @@ void PrintVisual(){
             Line_0 += "  NEW";
             draw_flag = false;
         }
+        
         else Line_0 += "          ";
 
         if (!Player[i].show){
@@ -341,9 +351,13 @@ void OpponentGuess(){
                 Opponent[O_n].color = Deck[draw].color;
                 Opponent[O_n].num = Deck[draw].num;
                 O_n+=1;
+                //최근 뽑은것 저장
+                Drawed_O.color = Deck[draw].color;
+                Drawed_O.num = Deck[draw].num;
                 // Deck에서 그 카드 삭제
                 Deck[draw].color = "None";
                 Deck[draw].num = -1;
+                draw_flag_O = true;
                 break;
             }
         }
