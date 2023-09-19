@@ -7,8 +7,6 @@ made with c++, algorithm from scratch
 
 ❗Did not add joker cards, will add later if possible
 
-❗NO CLASSES?.....
-
 
 ## ➕Updates
 
