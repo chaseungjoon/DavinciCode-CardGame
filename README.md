@@ -10,4 +10,4 @@ made with c++, algorithm from scratch
 
 ## ➕Updates
 
-9/19/23 - Set language to english
+9/19/23 - Set language to english, Now show "NEW" in opponent's deck as well
