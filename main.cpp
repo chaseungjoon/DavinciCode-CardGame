@@ -385,7 +385,7 @@ void UpdatePlayerProb() {
             if (!ownedByOpponent && !isNumberKnown[num]) PlayerProb[i].push_back(num);
         }
     }
-
+    /*
     std::cout << "\n[DEBUG] Opponent (Computer) Cards:" << std::endl;
     for (int i = 0; i < O_n; i++) {
         std::cout << "Index " << i << ": " << Opponent[i].color << " " << Opponent[i].num;
@@ -403,6 +403,7 @@ void UpdatePlayerProb() {
         for (int val : PlayerProb[i]) std::cout << val << " ";
         std::cout << std::endl;
     }
+    */
 }
 
 void RemoveNumberFromPlayerProb(int idx, int num) {
@@ -411,7 +412,6 @@ void RemoveNumberFromPlayerProb(int idx, int num) {
 }
 
 void OpponentGuess() {
-    std::sort(Player, Player + P_n, compareCards);
     if (O_n + P_n != 22) {
         int draw;
         while (true) {
@@ -430,6 +430,7 @@ void OpponentGuess() {
         }
     }
 
+    std::sort(Player, Player + P_n, compareCards);
     UpdatePlayerProb();
 
     int target = -1, minSize = 100;
