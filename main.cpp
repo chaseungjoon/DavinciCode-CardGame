@@ -346,11 +346,17 @@ void UpdateKnownNumbers() {
 }
 
 void UpdatePlayerProb() {
+    std::sort(Player, Player + P_n, compareCards); // 먼저 Player 정렬
+
     UpdateKnownNumbers();
     int blackCount = 0;
     for (int i = 0; i < P_n; i++) if (Player[i].color == "black") blackCount++;
 
+    // 1. 확률 배열 계산
     for (int i = 0; i < P_n; i++) {
+        if (Player[i].show || (PlayerProb[i].size() == 1 && !Player[i].show)) {
+            continue;
+        }
         PlayerProb[i].clear();
         if (Player[i].show) continue;
 
@@ -361,31 +367,61 @@ void UpdatePlayerProb() {
             ub = std::min(11 - (blackCount - (i + 1)), 11);
         }
 
+        // 왼쪽 카드 제한
         for (int j = i - 1; j >= 0; j--) {
             if (Player[j].show) {
+                // 같은 숫자 + 색 다르면 제한하지 않음
+                if (Player[j].num == Player[i].num && Player[j].color != Player[i].color) continue;
                 lb = std::max(lb, Player[j].num + 1);
                 break;
             }
         }
+
+        // 오른쪽 카드 제한
         for (int j = i + 1; j < P_n; j++) {
             if (Player[j].show) {
+                if (Player[i].color == "black" && Player[j].color == "white") {
+                    if (!isNumberKnown[Player[j].num]) {
+                        break;
+                    }
+                }
+                if (Player[j].num == Player[i].num && Player[j].color != Player[i].color) continue;
                 ub = std::min(ub, Player[j].num - 1);
                 break;
             }
         }
 
         for (int num = lb; num <= ub; num++) {
-            bool ownedByOpponent = false;
+            bool iAlreadyHave = false;
             for (int j = 0; j < O_n; j++) {
-                if (j < O_n && Opponent[j].num == num) {
-                    ownedByOpponent = true;
+                if (Opponent[j].num == num) {
+                    iAlreadyHave = true;
                     break;
                 }
             }
-            if (!ownedByOpponent && !isNumberKnown[num]) PlayerProb[i].push_back(num);
+
+            if (!isNumberKnown[num] && !iAlreadyHave) {
+                PlayerProb[i].push_back(num);
+            }
         }
     }
-    /*
+
+    // 2. Player + PlayerProb 정렬 동기화
+    std::vector<std::pair<Card, std::vector<int>>> paired;
+    for (int i = 0; i < P_n; ++i) {
+        paired.emplace_back(Player[i], PlayerProb[i]);
+    }
+
+    std::sort(paired.begin(), paired.end(), [](const auto& a, const auto& b) {
+        return compareCards(a.first, b.first);
+    });
+
+    for (int i = 0; i < P_n; ++i) {
+        Player[i] = paired[i].first;
+        PlayerProb[i] = paired[i].second;
+    }
+/*
+    // 디버깅 출력
     std::cout << "\n[DEBUG] Opponent (Computer) Cards:" << std::endl;
     for (int i = 0; i < O_n; i++) {
         std::cout << "Index " << i << ": " << Opponent[i].color << " " << Opponent[i].num;
@@ -403,7 +439,7 @@ void UpdatePlayerProb() {
         for (int val : PlayerProb[i]) std::cout << val << " ";
         std::cout << std::endl;
     }
-    */
+*/
 }
 
 void RemoveNumberFromPlayerProb(int idx, int num) {
@@ -425,6 +461,7 @@ void OpponentGuess() {
                 Deck[draw].num      = -1;
                 draw_flag_O = true;
                 O_n++;
+                std::sort(Opponent, Opponent + O_n, compareCards);
                 break;
             }
         }
@@ -442,7 +479,10 @@ void OpponentGuess() {
             target = i;
         }
     }
-    if (target == -1) return;
+    if (target == -1) {
+        std::cout << "[DEBUG] Opponent skipped turn - no guessable card.\n";
+        return;
+    }
 
     std::vector<int> &candidates = PlayerProb[target];
     int guess = candidates[distrib(gen) % candidates.size()];
@@ -477,7 +517,7 @@ void OpponentGuess() {
         std::vector<int> &defCandidates = PlayerProb[definiteIdx];
         int sureGuess = defCandidates[distrib(gen) % defCandidates.size()];
 
-        std::cout << "\nOPPONENT DEFINITE GUESS: Index " << definiteIdx << " → " << sureGuess << std::endl;
+        std::cout << "\nOPPONENT GUESS: Index " << definiteIdx << " → " << sureGuess << std::endl;
         if (Player[definiteIdx].num == sureGuess) {
             std::cout << "CORRECT!" << std::endl;
             Player[definiteIdx].show = true;
@@ -493,7 +533,6 @@ void OpponentGuess() {
         }
     }
 }
-
 
 bool compareCards(const Card &a, const Card &b) {
     if (a.num != b.num) {
