@@ -12,4 +12,4 @@ made with c++, algorithm from scratch
 
 9/19/23 - Set language to english, Now show "NEW" in opponent's deck as well
 
-05/19/25 - Improved computer's guessing algorithm (still in progress)
+05/19/25 - Improved computer's guessing algorithm (propagation needs to be added)
